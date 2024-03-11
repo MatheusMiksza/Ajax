@@ -11,6 +11,63 @@
     <h1>Estados</h1>
 
     <script>
-        // ...
+       function ajax(config){
+        const xhr = new XMLHttpRequest()
+        xhr.open(config.metodo,config.url,true)// abrindo a requisição
+
+        xhr.onload = e =>{
+            debugger
+            if(xhr.status === 200){
+                config.sucesso(xhr.response)
+            }else if(xhr.status >= 400){
+                config.error({
+                    code: xhr.status,
+                    text:xhr.statusText
+                });
+            }
+        }
+
+        xhr.send()
+       }
+
+       //Recebe um array de estados e monta linha por linha da tabela
+       function CriaTabela(estados){
+
+        //map transformsa uma array em outro do mesmo tamanho
+        const linhas = estados.map(estado =>{
+                const tdId = document.createElement('td')//Table data (dados da tabela)
+                tdId.innerHTML = estado.id
+
+                const tdNome = document.createElement('td')//Table data (dados da tabela)
+                tdNome.innerHTML = estado.nome
+                
+                const tdSigla = document.createElement('td')//Table data (dados da tabela)
+                tdSigla.innerHTML = estado.sigla
+                
+                const tr = document.createElement('tr')//table row - linha da tabela
+
+                tr.appendChild(tdId)
+                tr.appendChild(tdNome)
+                tr.appendChild(tdSigla)
+            
+                document.querySelector('body').appendChild(tr)
+                
+
+            })
+       }
+
+       ajax({
+        url:"dados/estados.json",
+        metodo:"GET",
+        sucesso(resposta){
+            const estados = JSON.parse(resposta)
+
+            CriaTabela(estados)
+        },
+        error(e){
+            const msg = document.createTextNode(`${e.code}:${e.text}`)
+            document.querySelector('body').appendChild(msg)
+        }
+       })
     </script>
 </body>
